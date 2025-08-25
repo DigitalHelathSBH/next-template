@@ -14,8 +14,8 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY package.json package-lock.json ./
+# COPY --from=build /app/public ./public   # ถ้ามีค่อยใส่กลับ
+COPY package.json ./
 RUN npm install --omit=dev --legacy-peer-deps --no-audit --no-fund
 EXPOSE 3000
 CMD ["npm","run","start","--","-p","3000"]
