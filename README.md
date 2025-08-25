@@ -54,3 +54,33 @@ docker run -d --name welcome -p 4001:3000 --restart unless-stopped welcome
 
 # 4) ทดสอบ
 curl -I http://127.0.0.1:4001/
+
+## 🧭 ตั้งค่า Nginx (ตัวอย่าง)
+
+<details>
+<summary><b>A) ใช้ path prefix <code>/welcome</code></b></summary>
+
+```nginx
+server {
+    listen 80;
+    server_name <YOUR_IP_OR_DOMAIN>;
+
+    gzip on;
+    gzip_types text/plain application/json application/javascript text/css text/xml application/xml+rss;
+    client_max_body_size 20m;
+
+    location /welcome/ {
+        proxy_pass         http://127.0.0.1:4001/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+    }
+
+    # (ทางเลือก) ส่งผู้ใช้จาก root ไปยัง /welcome/
+    location = / { return 302 /welcome/; }
+}
+
